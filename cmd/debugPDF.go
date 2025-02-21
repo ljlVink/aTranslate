@@ -1,12 +1,11 @@
 /*
 Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
-	"fmt"
 	"aTranslate/pdf2img"
+	"fmt"
 	"github.com/spf13/cobra"
 )
 

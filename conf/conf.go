@@ -4,7 +4,9 @@ type Yaml_config struct {
 	General General
 }
 
-type General struct{
-	Openai_key string 
+type General struct {
+	Openai_key string
 	Openai_url string
 }
+
+var Prompt = `翻译这段文字成中文。`

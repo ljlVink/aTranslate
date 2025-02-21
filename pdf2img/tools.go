@@ -1,11 +1,11 @@
 package pdf2img
 
 import (
+	"fmt"
 	"github.com/gen2brain/go-fitz"
 	"image/jpeg"
 	"os"
 	"path/filepath"
-	"fmt"
 )
 
 func Pdf2img(pdfPath string) {
@@ -37,5 +37,5 @@ func Pdf2img(pdfPath string) {
 		f.Close()
 
 	}
-	
+
 }

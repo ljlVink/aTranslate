@@ -1,58 +1,67 @@
 /*
 Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
-	"fmt"
 	"aTranslate/chatgpt"
+	"aTranslate/conf"
+	"aTranslate/utils"
+	"fmt"
+	openai "github.com/sashabaranov/go-openai"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"aTranslate/conf"
 )
+
 var oaikey string
 var oaiurl string
 
 func DDreadConfig() {
-	err:=viper.ReadInConfig()
-	if err!=nil{
+	err := viper.ReadInConfig()
+	if err != nil {
 		fmt.Println(err)
 	}
-	var config  conf.Yaml_config
+	var config conf.Yaml_config
 	viper.Unmarshal(&config)
-	oaikey=config.General.Openai_key
-	oaiurl=config.General.Openai_url
+	oaikey = config.General.Openai_key
+	oaiurl = config.General.Openai_url
 	fmt.Println(oaikey)
 	fmt.Println(oaiurl)
 }
 
-
-
 // debugChatCmd represents the debugChat command
 var debugChatCmd = &cobra.Command{
-	Use:   "debugchat",
-	Short: "debugchat",
-	Long: `debug`,
+	Use:   "debugChat",
+	Short: "debugChat",
+	Long:  `debug`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("debugChat called")
 		DDreadConfig()
-		oaiclient:=chatgpt.NewOpenAIClient(oaiurl,oaikey)
-		messages:=[]chatgpt.Message{
-			{
-				Role:    "system",
-				Content: "你是一个翻译机器，你需要翻译这个图片成中文意义",
-			},
-			{
-				Role:    "user",
-				Content: "翻译中文",
-			},
-		}
-		answer,err:=oaiclient.SendMessage(messages,"chatgpt-4o-latest",`C:\Users\16662\Desktop\atranslate\image.png`)
-		if err!=nil{
+		img_base64url, err := utils.Img2Base64Url("/home/sensorfaucet/Desktop/aTranslate/img/123/image-00007.jpg")
+		if err != nil {
 			fmt.Println(err)
 		}
-		fmt.Println(answer)
+		fmt.Println(img_base64url)
+		Oaiclient := chatgpt.NewOpenAIClient(oaiurl, oaikey)
+		MultiContent := []openai.ChatMessagePart{
+			{
+				Type: openai.ChatMessagePartTypeText,
+				Text: conf.Prompt,
+			},
+			{
+				Type: openai.ChatMessagePartTypeImageURL,
+				ImageURL: &openai.ChatMessageImageURL{
+					URL:    img_base64url,
+					Detail: openai.ImageURLDetailAuto,
+				},
+			},
+		}
+		resp, err := Oaiclient.SendMessage(MultiContent, openai.GPT4oLatest)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println(resp)
+		}
 	},
 }
 

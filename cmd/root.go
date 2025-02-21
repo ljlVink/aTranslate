@@ -1,14 +1,13 @@
 /*
 Copyright © 2025 ljlvink
-
 */
 package cmd
 
 import (
 	"fmt"
-	"os"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"os"
 )
 
 var cfgFile string
@@ -17,7 +16,7 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Use:   "aTranslate",
 	Short: "A brief description of your application",
-	Long: `Translate pdf to Chinese.`,
+	Long:  `Translate pdf to Chinese.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
