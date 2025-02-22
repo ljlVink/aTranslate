@@ -24,6 +24,9 @@ func (client *OpenAIClient) SendMessage(messages []openai.ChatMessagePart, model
 		Model:       model,
 		Messages: []openai.ChatCompletionMessage{
 			{
+				Role: openai.ChatMessageRoleSystem, Content: "有什么可以帮你的吗?",
+			},
+			{
 				Role:         openai.ChatMessageRoleUser,
 				MultiContent: messages,
 			},

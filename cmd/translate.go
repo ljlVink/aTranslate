@@ -1,24 +1,25 @@
 /*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
+Copyright © 2025 ljlvink
 */
 package cmd
 
 import (
 	"aTranslate/conf"
-	"fmt"
+	"aTranslate/translate"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-func readConfig() {
+var config conf.Yaml_config
+
+func readConfig() error {
 	err := viper.ReadInConfig()
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
-	var config conf.Yaml_config
 	viper.Unmarshal(&config)
-	fmt.Println(config.General.Openai_key)
-	fmt.Println(config.General.Openai_url)
+	return nil
 }
 
 // translateCmd represents the translate command
@@ -27,12 +28,20 @@ var translateCmd = &cobra.Command{
 	Short: "translate",
 	Long:  `Translate pdf to Chinese.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("translate called")
-		readConfig()
-
+		err := readConfig()
+		if err != nil {
+			log.Fatalln("Error in readConfig ,", err)
+		}
+		file, _ := cmd.Flags().GetString("file")
+		err = translate.DoTranslate(file)
+		if err != nil {
+			log.Println("Error in DoTranslate ,", err)
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(translateCmd)
+	translateCmd.Flags().StringP("file", "f", "", "File to be translated")
+	translateCmd.MarkFlagRequired("file")
 }

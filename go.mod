@@ -5,6 +5,7 @@ go 1.22.5
 require (
 	github.com/gen2brain/go-fitz v1.24.14
 	github.com/sashabaranov/go-openai v1.37.0
+	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/viper v1.19.0
 )

@@ -4,7 +4,9 @@ Copyright © 2025 ljlvink
 package cmd
 
 import (
+	"aTranslate/utils"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"os"
@@ -12,58 +14,50 @@ import (
 
 var cfgFile string
 
-// rootCmd represents the base command when called without any subcommands
+// Root 命令
 var rootCmd = &cobra.Command{
 	Use:   "aTranslate",
-	Short: "A brief description of your application",
-	Long:  `Translate pdf to Chinese.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Short: "A tool to translate PDFs using the OpenAI platform.",
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	err := rootCmd.Execute()
-	if err != nil {
+	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
 }
 
 func init() {
+	log.SetFormatter(&log.TextFormatter{
+		FullTimestamp:   true,                        // 显示完整时间戳
+		TimestampFormat: "2006-01-02 15:04:05-07:00", // 自定义时间戳格式
+		ForceColors:     true,                        // 强制启用颜色
+		DisableColors:   false,                       // 不禁用颜色
+	})
 	cobra.OnInitialize(initConfig)
-
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.aTranslate.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is aTranslate.yaml)")
 }
 
-// initConfig reads in config file and ENV variables if set.
+// 初始化配置
 func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		// Use config file from the program directory.
-		workingDir, err := os.Getwd()
-		cobra.CheckErr(err)
-
+	workingDir := "." // 默认为当前目录
+	if cfgFile == "" {
 		viper.AddConfigPath(workingDir)
 		viper.SetConfigType("yaml")
 		viper.SetConfigName("aTranslate")
+	} else {
+		viper.SetConfigFile(cfgFile)
 	}
-
-	viper.AutomaticEnv() // read in environment variables that match
-
-	// If a config file is found, read it in.
+	viper.AutomaticEnv()
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		log.Println("Using config file:", viper.ConfigFileUsed())
+	} else if cfgFile != "" {
+		log.Fatalln("Failed to read config file:", err)
+	}
+	// Check if workingDir/outputs exists, if not, create it
+	outputsDir := fmt.Sprintf("%s/outputs", workingDir)
+	if !utils.IsDirExist(outputsDir) {
+		if err := os.Mkdir(outputsDir, os.ModePerm); err != nil {
+			log.Fatalln("Failed to create outputs directory:", err)
+		}
 	}
 }
