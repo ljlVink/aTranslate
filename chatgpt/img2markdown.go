@@ -3,7 +3,7 @@ package chatgpt
 import (
 	"aTranslate/conf"
 	"os"
-
+	"fmt"
 	openai "github.com/sashabaranov/go-openai"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -25,7 +25,7 @@ func loadConfig() {
 	oaimodel = config.General.Openai_model
 }
 
-func Img2MarkdownOut(base64EncodedString string, OutPutPath string, CurrentPage int) error {
+func Img2MarkdownOut(base64EncodedString string, OutPutPath string, CurrentPage,AllPages int) error {
 	loadConfig()
 	log.Println("calling Img2MarkdownOut -> ImgOutPutPath:", OutPutPath)
 	Oaiclient := NewOpenAIClient(oaiurl, oaikey)
@@ -47,9 +47,13 @@ func Img2MarkdownOut(base64EncodedString string, OutPutPath string, CurrentPage 
 		log.Println(err)
 		return err
 	} else {
-		log.Println("Page:", CurrentPage, "Translated Successfully")
+		log.Println("Page:", CurrentPage+1, "Translated Successfully")
 	}
-
+	
+	resp += fmt.Sprintf("\n\n<p align=\"right\">Powered by aTranslate. Page %d</p>", CurrentPage+1)
+	if CurrentPage+1!=AllPages{
+		resp += "\n---\n"
+	}
 	if err := os.WriteFile(OutPutPath, []byte(resp), 0666); err != nil {
 		log.Fatalln(err)
 	}

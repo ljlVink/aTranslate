@@ -45,7 +45,7 @@ func Pdf2img(pdfDir string, outputDir string) error {
 
 			var retry int
 			for retry = 0; retry < 3; retry++ {
-				err = chatgpt.Img2MarkdownOut(encoded, filepath.Join(outputDir, fmt.Sprintf("Page-%d.md", pageNum)), pageNum)
+				err = chatgpt.Img2MarkdownOut(encoded, filepath.Join(outputDir, fmt.Sprintf("Page-%d.md", pageNum)), pageNum,numPages)
 				if err == nil {
 					break
 				}
