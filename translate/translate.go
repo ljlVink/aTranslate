@@ -17,7 +17,7 @@ import (
 	"github.com/gen2brain/go-fitz"
 )
 
-func Pdf2img(pdfDir string, outputDir string) error {
+func Pdf2img(pdfDir,outputDir string,isppt bool) error {
 	doc, err := fitz.New(pdfDir)
 	if err != nil {
 		panic(err)
@@ -45,7 +45,7 @@ func Pdf2img(pdfDir string, outputDir string) error {
 
 			var retry int
 			for retry = 0; retry < 3; retry++ {
-				err = chatgpt.Img2MarkdownOut(encoded, filepath.Join(outputDir, fmt.Sprintf("Page-%d.md", pageNum)), pageNum,numPages)
+				err = chatgpt.Img2MarkdownOut(encoded, filepath.Join(outputDir, fmt.Sprintf("Page-%d.md", pageNum)), pageNum,numPages,isppt)
 				if err == nil {
 					break
 				}
@@ -74,7 +74,7 @@ func Pdf2img(pdfDir string, outputDir string) error {
 7. 将翻译结果写入文件
 8. 合并所有文件
 */
-func DoTranslate(pdfDir string) error {
+func DoTranslate(pdfDir string,isppt bool) error {
 	// 读取工作目录文件
 	workDir, _ := os.Getwd()
 	outputDir := filepath.Join(workDir, "outputs")
@@ -89,6 +89,6 @@ func DoTranslate(pdfDir string) error {
 			return fmt.Errorf("failed to create output directory: %w", err)
 		}
 	}
-	err = Pdf2img(pdfDir, outputDir)
+	err = Pdf2img(pdfDir, outputDir,isppt)
 	return err
 }

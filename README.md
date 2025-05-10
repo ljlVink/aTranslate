@@ -39,6 +39,6 @@ general:
 ```
 git clone https://github.com/ljlvink/aTranslate
 cd aTranslate
-go build "-s -w"
+go build -ldflags "-s -w"
 ./aTranslate
 ```

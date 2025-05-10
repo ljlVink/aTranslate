@@ -33,7 +33,8 @@ var translateCmd = &cobra.Command{
 			log.Fatalln("Error in readConfig ,", err)
 		}
 		file, _ := cmd.Flags().GetString("file")
-		err = translate.DoTranslate(file)
+		isppt, _ := cmd.Flags().GetBool("ppt")
+		err = translate.DoTranslate(file,isppt)
 		if err != nil {
 			log.Println("Error in DoTranslate ,", err)
 		}
@@ -43,5 +44,6 @@ var translateCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(translateCmd)
 	translateCmd.Flags().StringP("file", "f", "", "File to be translated")
+	translateCmd.Flags().BoolP("ppt", "p", false, "ppt mode")
 	translateCmd.MarkFlagRequired("file")
 }
